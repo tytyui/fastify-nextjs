@@ -28,21 +28,16 @@ function fastifyNext (fastify, options, next) {
         })
 
       if (noServeAssets) {
-        return next()
-      }
-
-      app.getServer().then(server => {
-        const basePath = server?.nextConfig?.basePath || ''
-        const nextAssetsPath = `${basePath}/_next/*`
-
-        fastify
-          .after(() => {
+          const basePath = nextOptions.basePath || '' // 尝试从配置中获取
+          const nextAssetsPath = `${basePath}/_next/*`
+          
+          fastify.after(() => {
             fastify.next(nextAssetsPath)
           })
-
-        next()
+          next()
+        }
+        return next()
       })
-    })
     .catch(err => next(err))
 
   function route (path, opts, callback) {
